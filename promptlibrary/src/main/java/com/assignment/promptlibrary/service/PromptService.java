@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
 
 import com.assignment.promptlibrary.dao.PromptDao;
 import com.assignment.promptlibrary.dto.PromptDTO;
 import com.assignment.promptlibrary.model.Prompt;
 
+@Service
 public class PromptService {
   private final PromptDao promptDao;
 

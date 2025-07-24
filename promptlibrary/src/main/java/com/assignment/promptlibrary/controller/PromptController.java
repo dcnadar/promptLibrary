@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class PromptController {
 
   private final PromptService promptService;
-  private S3Service s3Service;
+  // private S3Service s3Service;
 
-  public PromptController(PromptService promptService, S3Service s3Service) {
+  public PromptController(PromptService promptService) {// , S3Service s3Service) {
     this.promptService = promptService;
-    this.s3Service = s3Service;
+    // this.s3Service = s3Service;
   }
 
   @PostMapping("/prompts")

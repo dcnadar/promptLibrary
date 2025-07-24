@@ -6,10 +6,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Component;
 
 import com.assignment.promptlibrary.model.Prompt;
 import com.assignment.promptlibrary.model.User;
 
+@Component
 public class PromptDao {
 
   private final MongoTemplate mongoTemplate;
