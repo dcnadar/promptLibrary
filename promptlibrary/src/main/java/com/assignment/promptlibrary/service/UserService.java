@@ -3,7 +3,9 @@ package com.assignment.promptlibrary.service;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.assignment.promptlibrary.dao.UserDao;
@@ -15,67 +17,67 @@ public class UserService {
 
   private UserDao userDao;
 
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
   public UserService(UserDao userDao) {
     this.userDao = userDao;
   }
 
   // registering a new user
-  public int registerUser(UserDTO userDTO) {
+  public Optional<UserDTO> registerUser(UserDTO userDTO) {
     Optional<User> existingUser = userDao.findUserByEmail(userDTO.getEmail());
     if (existingUser.isPresent()) {
-      return 409;
+      return Optional.empty();
     }
-    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-    String hashedPassword = bCryptPasswordEncoder.encode(userDTO.getPassword());
+    String hashedPassword = new BCryptPasswordEncoder().encode(userDTO.getPassword());
     User userEntity = new User();
     BeanUtils.copyProperties(userDTO, userEntity);
     userEntity.setPassword(hashedPassword);
-    userDao.registerUser(userEntity);
-    return 200;
-  }
-
-  // issue jwt token in this
-  public boolean authenticateUser(UserDTO userDTO) {
-    String emailId = userDTO.getEmail();
-    Optional<User> userByEmail = userDao.findUserByEmail(emailId);
-    if (userByEmail.isPresent()) {
-      User user = userByEmail.get();
-      String hashedPassword = user.getPassword();
-      BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-      Boolean isAvilable = bCryptPasswordEncoder.matches(userDTO.getPassword(), hashedPassword);
-      return isAvilable;
-    }
-    return false;
+    User savedUser = userDao.registerUser(userEntity);
+    UserDTO responseDto = new UserDTO();
+    BeanUtils.copyProperties(savedUser, responseDto);
+    responseDto.setPassword(null);
+    responseDto.setPassword(null);
+    return Optional.of(responseDto);
   }
 
   // info of a user
-  public UserDTO getUser(String email) {
-    Optional<User> userByEmail = userDao.findUserByEmail(email);
-    if (userByEmail.isPresent()) {
-      User user = userByEmail.get();
-      UserDTO userDTO = new UserDTO();
-      BeanUtils.copyProperties(user, userDTO);
-
+  public UserDTO getUser(String username) {
+    User userByEmail = userDao.findUserByUsername(username);
+    UserDTO userDTO = new UserDTO();
+    if (userByEmail != null) {
+      BeanUtils.copyProperties(userByEmail, userDTO);
+      userDTO.setPassword(null);
       return userDTO;
     }
-
     return null;
   }
 
   // update profile data
-  public boolean updateUser(UserDTO userDTO, String id) {
-    Optional<User> existingUser = userDao.findUserById(id);
-    if (existingUser.isPresent()) {
-      User user = existingUser.get();
-      BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-      String hashedPassword = bCryptPasswordEncoder.encode(userDTO.getPassword());
-      BeanUtils.copyProperties(userDTO, user);
+  public Optional<UserDTO> updateUser(UserDTO userDTO, String id) {
+    Optional<User> existingUserOpt = userDao.findUserById(id);
+    if (existingUserOpt.isEmpty()) {
+      return Optional.empty();
+    }
+    User user = existingUserOpt.get();
+    if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+      String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
       user.setPassword(hashedPassword);
-      Boolean updateduser = userDao.updateUser(user, id);
-      return updateduser;
+    }
+    user.setUsername(userDTO.getUsername());
+    // user.setEmail(userDTO.getEmail());
+    // user.setRole(userDTO.getRole());
+    Optional<User> updatedUserOpt = userDao.updateUser(user, id);
+
+    if (updatedUserOpt.isPresent()) {
+      UserDTO updatedDTO = new UserDTO();
+      BeanUtils.copyProperties(updatedUserOpt.get(), updatedDTO);
+      updatedDTO.setPassword(null);
+      return Optional.of(updatedDTO);
     }
 
-    return false;
+    return Optional.empty();
 
   }
 

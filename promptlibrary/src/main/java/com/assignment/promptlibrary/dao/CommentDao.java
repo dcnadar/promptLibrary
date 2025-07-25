@@ -18,31 +18,26 @@ public class CommentDao {
   @Autowired
   public MongoTemplate mongoTemplate;
 
-  public Prompt findPrompt(String promptId) {
+  public Comment findCommentById(String commentId) {
     Query query = new Query();
-    query.addCriteria(Criteria.where("promptId").is(promptId));
-    return mongoTemplate.findOne(query, Prompt.class);
-  }
-
-  public String addComment(Comment comment, String promptId) {
-    // CommentDao commentDao = new CommentDao();
-    // Prompt prompt = commentDao.findPrompt(promptId);
-    Comment saved = mongoTemplate.save(comment);
-    if (saved != null) {
-      return "Saved";
-    }
-    return "Failed to save";
+    query.addCriteria(Criteria.where("id").is(commentId));
+    return mongoTemplate.findOne(query, Comment.class);
   }
 
   public List<Comment> getAllComments(String promptId) {
     Query query = new Query();
-    query.addCriteria(Criteria.where("promptId").is(promptId));
+    query.addCriteria(Criteria.where("id").is(promptId));
     return mongoTemplate.find(query, Comment.class);
   }
 
-  public boolean deleteComment(String promptId, String commentId) {
+  public boolean addComment(Comment comment) {
+    Comment saved = mongoTemplate.save(comment);
+    return saved != null;
+  }
+
+  public boolean deleteCommentById(String commentId) {
     Query query = new Query();
-    query.addCriteria(Criteria.where("promptId").is(promptId).and("commentId").is(commentId));
+    query.addCriteria(Criteria.where("id").is(commentId));
     DeleteResult result = mongoTemplate.remove(query, Comment.class);
     return result.getDeletedCount() > 0;
   }

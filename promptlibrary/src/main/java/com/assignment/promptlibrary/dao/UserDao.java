@@ -16,8 +16,8 @@ public class UserDao {
   @Autowired
   private MongoTemplate mongoTemplate;
 
-  public void registerUser(User userEntity) {
-    mongoTemplate.save(userEntity);
+  public User registerUser(User userEntity) {
+    return mongoTemplate.insert(userEntity);
   }
 
   public Optional<User> findUserByEmail(String email) {
@@ -41,18 +41,19 @@ public class UserDao {
     return Optional.ofNullable(entityUser);
   }
 
-  public boolean updateUser(User user, String id) {
+  public Optional<User> updateUser(User user, String id) {
     Query query = new Query();
     query.addCriteria(Criteria.where("id").is(id));
     Update update = new Update();
-    update.set("username", user.getUsername());
-    update.set("email", user.getEmail());
-    update.set("password", user.getPassword());
-    update.set("role", user.getRole());
-    User updatedUser = mongoTemplate.findAndModify(query, update, User.class);
-    if (updatedUser != null) {
-      return true;
+    if (user.getUsername() != null) {
+      update.set("username", user.getUsername());
     }
-    return false;
+    if (user.getPassword() != null) {
+      update.set("password", user.getPassword());
+    }
+    // update.set("email", user.getEmail());
+    // update.set("role", user.getRole());
+    User updatedUser = mongoTemplate.findAndModify(query, update, User.class);
+    return Optional.ofNullable(updatedUser);
   }
 }
