@@ -3,6 +3,7 @@ package com.assignment.promptlibrary.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "users")
 public class User {
@@ -13,6 +14,7 @@ public class User {
   @Indexed(unique = true)
   private String username;
 
+  @Indexed(unique = true)
   private String email;
 
   private String password;

@@ -55,8 +55,10 @@ public class UserService {
       User user = userByEmail.get();
       UserDTO userDTO = new UserDTO();
       BeanUtils.copyProperties(user, userDTO);
+
       return userDTO;
     }
+
     return null;
   }
 

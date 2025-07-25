@@ -4,21 +4,24 @@ import com.assignment.promptlibrary.dto.UserDTO;
 
 public class UserApiResponse {
 
-  private int statusCode;
+  private Integer statusCode;
   private String statusMsg;
   private UserDTO userDTO;
 
   public UserApiResponse() {
   }
 
-  public UserApiResponse(int statusCode, String statusMsg, UserDTO userDTO) {
+  public UserApiResponse(Integer statusCode, String statusMsg, UserDTO userDTO) {
+    this.statusCode = statusCode;
+    this.statusMsg = statusMsg;
+    this.userDTO = userDTO;
   }
 
-  public int getStatusCode() {
+  public Integer getStatusCode() {
     return statusCode;
   }
 
-  public void setStatusCode(int statusCode) {
+  public void setStatusCode(Integer statusCode) {
     this.statusCode = statusCode;
   }
 

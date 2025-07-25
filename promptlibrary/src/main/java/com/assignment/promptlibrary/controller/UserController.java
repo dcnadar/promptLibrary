@@ -1,5 +1,6 @@
 package com.assignment.promptlibrary.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,12 +46,14 @@ public class UserController {
 
   // User Profile - authenticated need to check jwt token
   @GetMapping("/users/me")
-  public ResponseEntity<?> getAuthUser(@RequestParam String email) {
+  public ResponseEntity<UserApiResponse> getAuthUser(@RequestParam String email) {
+
     UserDTO userDTO = userService.getUser(email);
     if (userDTO != null) {
       return ResponseEntity.ok(new UserApiResponse(200, "Success", userDTO));
     }
-    return ResponseEntity.ok(new UserApiResponse(200, "No record", userDTO));
+
+    return ResponseEntity.status(HttpStatus.valueOf(404)).body(new UserApiResponse(404, "No record", null));
   }
 
   // Update User - authenticated need to check jwt token

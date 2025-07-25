@@ -27,6 +27,13 @@ public class UserDao {
     return Optional.ofNullable(entityUser);
   }
 
+  public User findUserByUsername(String username) {
+    Query query = new Query();
+    query.addCriteria(Criteria.where("username").is(username));
+    User entityUser = mongoTemplate.findOne(query, User.class);
+    return entityUser;
+  }
+
   public Optional<User> findUserById(String id) {
     Query query = new Query();
     query.addCriteria(Criteria.where("id").is(id));
