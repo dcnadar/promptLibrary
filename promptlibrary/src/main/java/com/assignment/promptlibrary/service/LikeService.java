@@ -7,9 +7,10 @@ import com.assignment.promptlibrary.dao.UserDao;
 import com.assignment.promptlibrary.exception.LikeException;
 import com.assignment.promptlibrary.exception.UserException;
 import com.assignment.promptlibrary.model.User;
+import com.assignment.promptlibrary.service.serviceInterfaces.ILikeService;
 
 @Service
-public class LikeService {
+public class LikeService implements ILikeService {
 
   private final LikeDao likeDao;
   private final UserDao userDao;
@@ -19,6 +20,7 @@ public class LikeService {
     this.userDao = userDao;
   }
 
+  @Override
   public String likePrompt(String promptId, String username) {
     User user = userDao.findUserByUsername(username);
     if (user == null) {
@@ -32,6 +34,7 @@ public class LikeService {
 
   }
 
+  @Override
   public String unlikePrompt(String promptId, String username) {
     User user = userDao.findUserByUsername(username);
     if (user == null) {

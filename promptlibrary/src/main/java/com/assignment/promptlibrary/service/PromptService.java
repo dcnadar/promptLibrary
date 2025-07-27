@@ -18,10 +18,11 @@ import com.assignment.promptlibrary.exception.UserException;
 import com.assignment.promptlibrary.model.Prompt;
 import com.assignment.promptlibrary.model.User;
 import com.assignment.promptlibrary.s3.S3Service;
+import com.assignment.promptlibrary.service.serviceInterfaces.IPromptService;
 import com.assignment.promptlibrary.utils.NullAwareBeanUtils;
 
 @Service
-public class PromptService {
+public class PromptService implements IPromptService {
   private final PromptDao promptDao;
   private final UserDao userDao;
 
@@ -33,6 +34,7 @@ public class PromptService {
     this.s3Service = s3Service;
   }
 
+  @Override
   public List<PromptDTO> allPublicPrompts() {
     return promptDao.getAllPrompts().stream().map(prompt -> {
       PromptDTO dto = new PromptDTO();
@@ -41,6 +43,7 @@ public class PromptService {
     }).collect(Collectors.toList());
   }
 
+  @Override
   public PromptDTO getPrompt(String promptId) {
     Prompt prompt = promptDao.getPrompt(promptId);
     if (prompt == null) {
@@ -54,6 +57,7 @@ public class PromptService {
     return dto;
   }
 
+  @Override
   public PromptDTO updatePrompt(String promptId, PromptDTO promptDTO, MultipartFile file, String username) {
     User userByUsername = userDao.findUserByUsername(username);
     if (userByUsername == null) {
@@ -86,6 +90,7 @@ public class PromptService {
     return updatedDTO;
   }
 
+  @Override
   public void deletePrompt(String promptId, String username) {
     User user = userDao.findUserByUsername(username);
     if (user == null) {
@@ -102,6 +107,7 @@ public class PromptService {
     promptDao.deletePrompt(promptId, user.getId());
   }
 
+  @Override
   public List<PromptDTO> getUserPrompts(String username) {
     User userByUsername = userDao.findUserByUsername(username);
     if (userByUsername == null) {
@@ -115,6 +121,7 @@ public class PromptService {
     }).collect(Collectors.toList());
   }
 
+  @Override
   public PromptDTO createPrompt(PromptDTO promptDTO, MultipartFile file, String username) {
     User userByUsername = userDao.findUserByUsername(username);
     if (userByUsername == null) {

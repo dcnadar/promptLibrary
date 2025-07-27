@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-PromptLibraryApplication<promptlibrary>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.assignment.promptlibrary.PromptLibraryApplication",
+      "projectName": "promptlibrary",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

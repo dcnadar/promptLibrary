@@ -12,9 +12,10 @@ import com.assignment.promptlibrary.dto.UserDTO;
 import com.assignment.promptlibrary.dto.UserUpdateDTO;
 import com.assignment.promptlibrary.exception.UserException;
 import com.assignment.promptlibrary.model.User;
+import com.assignment.promptlibrary.service.serviceInterfaces.IUserService;
 
 @Service
-public class UserService {
+public class UserService implements IUserService {
 
   private UserDao userDao;
 
@@ -25,6 +26,7 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
+  @Override
   public UserDTO getUser(String username) {
     User userByEmail = userDao.findUserByUsername(username);
     UserDTO userDTO = new UserDTO();
@@ -36,6 +38,7 @@ public class UserService {
     return null;
   }
 
+  @Override
   public void registerUser(UserDTO userDTO) {
 
     String role = userDTO.getRole();
@@ -57,6 +60,7 @@ public class UserService {
     userDao.registerUser(userEntity);
   }
 
+  @Override
   public Optional<UserDTO> updateUser(UserUpdateDTO userUpdateDTO, String id) {
     Optional<User> existingUserOpt = userDao.findUserById(id);
     if (existingUserOpt.isEmpty()) {

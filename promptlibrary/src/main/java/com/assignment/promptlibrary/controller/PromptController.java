@@ -13,8 +13,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.validation.Valid;
-
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -75,13 +73,13 @@ public class PromptController {
   @PutMapping(value = "/prompts/{promptId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<?> updatePrompt(
       @PathVariable String promptId,
-      @RequestPart("metadata") String metadataJson,
+      @RequestPart("metadata") String metadata,
       @RequestPart(value = "file", required = false) MultipartFile file) {
 
     ObjectMapper objectMapper = new ObjectMapper();
     PromptDTO promptDTO = new PromptDTO();
     try {
-      promptDTO = objectMapper.readValue(metadataJson, PromptDTO.class);
+      promptDTO = objectMapper.readValue(metadata, PromptDTO.class);
     } catch (JsonMappingException e) {
       throw new PromptException.BadRequestException("Json mapping exception");
     } catch (JsonProcessingException e) {

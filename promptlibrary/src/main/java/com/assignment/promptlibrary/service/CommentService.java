@@ -15,9 +15,10 @@ import com.assignment.promptlibrary.exception.CommentException;
 import com.assignment.promptlibrary.model.Comment;
 import com.assignment.promptlibrary.model.Prompt;
 import com.assignment.promptlibrary.model.User;
+import com.assignment.promptlibrary.service.serviceInterfaces.ICommentService;
 
 @Service
-public class CommentService {
+public class CommentService implements ICommentService {
 
   private final CommentDao commentDao;
 
@@ -30,6 +31,7 @@ public class CommentService {
     this.promptDao = promptDao;
   }
 
+  @Override
   public void addComment(CommentDTO commentDTO, String promptId, String username) {
     Prompt prompt = promptDao.getPrompt(promptId);
     if (prompt == null) {
@@ -47,6 +49,7 @@ public class CommentService {
     throw new CommentException.BadRequestException("Can not create comment currently");
   }
 
+  @Override
   public void deleteComment(String promptId, String commentId, String username) {
     User user = userDao.findUserByUsername(username);
     Comment comment = commentDao.findCommentById(commentId);
@@ -66,6 +69,7 @@ public class CommentService {
     commentDao.deleteCommentById(commentId);
   }
 
+  @Override
   public List<CommentDTO> getAllComments(String promptId) {
     List<Comment> commentList = commentDao.getAllComments(promptId);
     List<CommentDTO> dtoList = commentList.stream().map(comment -> {
