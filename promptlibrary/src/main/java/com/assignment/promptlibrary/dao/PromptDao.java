@@ -1,15 +1,15 @@
 package com.assignment.promptlibrary.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
+
 import org.springframework.stereotype.Component;
 
 import com.assignment.promptlibrary.model.Prompt;
+import com.mongodb.client.result.DeleteResult;
 
 @Component
 public class PromptDao {
@@ -22,31 +22,19 @@ public class PromptDao {
 
   public Prompt getPrompt(String promptId) {
     Query query = new Query();
-    query.addCriteria(Criteria.where("id").is(promptId));
+    query.addCriteria(Criteria.where("_id").is(promptId));
     return mongoTemplate.findOne(query, Prompt.class);
   }
 
   public void updatePrompt(String promptId, Prompt updatedPrompt, String userId) {
-    Query query = new Query();
-
-    query.addCriteria(Criteria.where("id").is(promptId).and("createdBy").is(userId));
-    Update update = new Update()
-        .set("title", updatedPrompt.getTitle())
-        .set("description", updatedPrompt.getDescription())
-        .set("price", updatedPrompt.getPrice())
-        .set("category", updatedPrompt.getCategory())
-        .set("contentType", updatedPrompt.getContentType())
-        .set("tags", updatedPrompt.getTags())
-        .set("s3Key", updatedPrompt.getS3Key())
-        .set("updatedAt", new Date());
-
-    mongoTemplate.findAndModify(query, update, Prompt.class);
+    mongoTemplate.save(updatedPrompt);
   }
 
   public void deletePrompt(String promptId, String userId) {
     Query query = new Query();
-    query.addCriteria(Criteria.where("id").is(promptId).and("createdBy").is(userId));
-    mongoTemplate.remove(query, Prompt.class);
+    query.addCriteria(Criteria.where("_id").is(promptId).and("createdBy").is(userId));
+    DeleteResult result = mongoTemplate.remove(query, Prompt.class);
+    System.out.println("Deleted count: " + result.getDeletedCount());
   }
 
   public List<Prompt> getUserPrompts(String userId) {
@@ -62,5 +50,4 @@ public class PromptDao {
   public Prompt savePrompt(Prompt prompt) {
     return mongoTemplate.save(prompt);
   }
-
 }

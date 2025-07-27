@@ -4,13 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import com.assignment.promptlibrary.dao.CommentDao;
 import com.assignment.promptlibrary.dao.PromptDao;
 import com.assignment.promptlibrary.dao.UserDao;
 import com.assignment.promptlibrary.dto.CommentDTO;
+import com.assignment.promptlibrary.exception.CommentException;
 import com.assignment.promptlibrary.model.Comment;
 import com.assignment.promptlibrary.model.Prompt;
 import com.assignment.promptlibrary.model.User;
@@ -29,32 +30,40 @@ public class CommentService {
     this.promptDao = promptDao;
   }
 
-  public boolean addComment(CommentDTO commentDTO, String promptId, String username) {
+  public void addComment(CommentDTO commentDTO, String promptId, String username) {
+    Prompt prompt = promptDao.getPrompt(promptId);
+    if (prompt == null) {
+      throw new CommentException.ResourceNotFoundException("Prompt not found");
+    }
     User user = userDao.findUserByUsername(username);
     Comment comment = new Comment();
     BeanUtils.copyProperties(commentDTO, comment);
     comment.setPromptId(promptId);
     comment.setUserId(user.getId());
-    return commentDao.addComment(comment);
+    boolean res = commentDao.addComment(comment);
+    if (res) {
+      return;
+    }
+    throw new CommentException.BadRequestException("Can not create comment currently");
   }
 
-  public boolean deleteComment(String promptId, String commentId, String username) {
+  public void deleteComment(String promptId, String commentId, String username) {
     User user = userDao.findUserByUsername(username);
     Comment comment = commentDao.findCommentById(commentId);
     if (comment == null || !comment.getPromptId().equals(promptId)) {
-      return false;
+      throw new CommentException.ResourceNotFoundException("Comment not found");
     }
+
     Prompt prompt = promptDao.getPrompt(promptId);
     if (prompt == null) {
-      return false;
+      throw new CommentException.ResourceNotFoundException("Prompt not found");
     }
     boolean isOwner = prompt.getCreatedBy().equals(user.getId());
     boolean isAuthor = comment.getUserId().equals(user.getId());
     if (!isOwner && !isAuthor) {
-      return false;
+      throw new CommentException.UnauthorizedException("Not authorized to delete this comment");
     }
-    return commentDao.deleteCommentById(commentId);
-
+    commentDao.deleteCommentById(commentId);
   }
 
   public List<CommentDTO> getAllComments(String promptId) {

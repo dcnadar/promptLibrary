@@ -11,6 +11,11 @@ public class UserApiResponse {
   public UserApiResponse() {
   }
 
+  public UserApiResponse(int statusCode, String statusMsg) {
+    this.statusCode = statusCode;
+    this.statusMsg = statusMsg;
+  }
+
   public UserApiResponse(Integer statusCode, String statusMsg, UserDTO userDTO) {
     this.statusCode = statusCode;
     this.statusMsg = statusMsg;

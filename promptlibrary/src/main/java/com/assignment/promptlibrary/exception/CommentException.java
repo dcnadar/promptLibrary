@@ -1,6 +1,6 @@
 package com.assignment.promptlibrary.exception;
 
-public class UserException {
+public class CommentException {
 
   public static class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

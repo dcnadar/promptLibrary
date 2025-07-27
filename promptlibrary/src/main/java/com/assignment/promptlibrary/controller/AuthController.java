@@ -1,9 +1,6 @@
 package com.assignment.promptlibrary.controller;
 
-import java.util.Optional;
-
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +13,7 @@ import com.assignment.promptlibrary.dao.UserDao;
 import com.assignment.promptlibrary.dto.AuthRequest;
 import com.assignment.promptlibrary.dto.JwtResponse;
 import com.assignment.promptlibrary.dto.UserDTO;
+import com.assignment.promptlibrary.exception.UserException;
 import com.assignment.promptlibrary.model.User;
 import com.assignment.promptlibrary.response.UserApiResponse;
 import com.assignment.promptlibrary.service.JwtService;
@@ -46,11 +44,20 @@ public class AuthController {
 
   @PostMapping("/login")
   public ResponseEntity<JwtResponse> login(@Valid @RequestBody AuthRequest request) {
-    authenticationManager
-        .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+    } catch (Exception e) {
+      throw new UserException.UnauthorizedException("Invalid username or password");
+    }
+
     String accessToken = jwtService.generateToken(request.getUsername(), true);
     String refreshToken = jwtService.generateToken(request.getUsername(), false);
     User user = userDao.findUserByUsername(request.getUsername());
+
+    if (user == null) {
+      throw new UserException.ResourceNotFoundException("User not found");
+    }
     UserDTO userDTO = new UserDTO();
     BeanUtils.copyProperties(user, userDTO);
     userDTO.setPassword(null);
@@ -60,15 +67,8 @@ public class AuthController {
 
   @PostMapping("/signup")
   public ResponseEntity<UserApiResponse> registerUser(@Valid @RequestBody UserDTO userDTO) {
-    Optional<UserDTO> savedUserOpt = userService.registerUser(userDTO);
-    userDTO.setPassword(null);
-
-    if (savedUserOpt.isPresent()) {
-      return ResponseEntity.ok(new UserApiResponse(200, "Success", savedUserOpt.get()));
-    } else {
-      return ResponseEntity.status(HttpStatus.CONFLICT)
-          .body(new UserApiResponse(409, "Email Already Exists", null));
-    }
+    userService.registerUser(userDTO);
+    return ResponseEntity.ok(new UserApiResponse(200, "Success"));
   }
 
 }

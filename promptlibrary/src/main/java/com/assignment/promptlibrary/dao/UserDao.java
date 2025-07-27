@@ -42,18 +42,21 @@ public class UserDao {
   }
 
   public Optional<User> updateUser(User user, String id) {
-    Query query = new Query();
-    query.addCriteria(Criteria.where("id").is(id));
-    Update update = new Update();
-    if (user.getUsername() != null) {
-      update.set("username", user.getUsername());
-    }
-    if (user.getPassword() != null) {
-      update.set("password", user.getPassword());
-    }
-    // update.set("email", user.getEmail());
-    // update.set("role", user.getRole());
-    User updatedUser = mongoTemplate.findAndModify(query, update, User.class);
-    return Optional.ofNullable(updatedUser);
+    // Query query = new Query();
+    // query.addCriteria(Criteria.where("id").is(id));
+    // Update update = new Update();
+    // if (user.getUsername() != null) {
+    // update.set("username", user.getUsername());
+    // }
+    // if (user.getPassword() != null) {
+    // update.set("password", user.getPassword());
+    // }
+    // // update.set("email", user.getEmail());
+    // // update.set("role", user.getRole());
+    // User updatedUser = mongoTemplate.findAndModify(query, update, User.class);
+
+    user.setId(id); // Ensure ID is set
+    User savedUser = mongoTemplate.save(user, "users");
+    return Optional.ofNullable(savedUser);
   }
 }

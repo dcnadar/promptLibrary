@@ -2,6 +2,9 @@ package com.assignment.promptlibrary.dto;
 
 import java.util.Date;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class CommentDTO {
   private String id;
 
@@ -9,6 +12,8 @@ public class CommentDTO {
 
   private String userId;
 
+  @NotBlank(message = "Comment cannot be empty")
+  @Size(max = 500, message = "Comment can be up to 500 characters")
   private String comment;
 
   private Date createdAt = new Date();

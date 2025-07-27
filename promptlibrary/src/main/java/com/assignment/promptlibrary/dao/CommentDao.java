@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.assignment.promptlibrary.model.Comment;
-import com.assignment.promptlibrary.model.Prompt;
+
 import com.mongodb.client.result.DeleteResult;
 
 @Component
@@ -26,7 +26,7 @@ public class CommentDao {
 
   public List<Comment> getAllComments(String promptId) {
     Query query = new Query();
-    query.addCriteria(Criteria.where("id").is(promptId));
+    query.addCriteria(Criteria.where("promptId").is(promptId));
     return mongoTemplate.find(query, Comment.class);
   }
 

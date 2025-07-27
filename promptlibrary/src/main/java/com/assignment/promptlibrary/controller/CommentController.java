@@ -3,8 +3,7 @@ package com.assignment.promptlibrary.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -14,6 +13,9 @@ import com.assignment.promptlibrary.dto.CommentDTO;
 
 import com.assignment.promptlibrary.response.CommentApiResponse;
 import com.assignment.promptlibrary.service.CommentService;
+import com.assignment.promptlibrary.utils.AuthUtils;
+
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,26 +32,22 @@ public class CommentController {
     this.commentService = commentService;
   }
 
+  @PreAuthorize("hasAuthority('BUYER')")
   @PostMapping("/prompts/{promptId}/comments")
-  public ResponseEntity<?> addComment(@RequestBody CommentDTO commentDTO, @PathVariable String promptId) {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    String username = auth.getName();
-    boolean res = commentService.addComment(commentDTO, promptId, username);
-    if (res) {
-      return ResponseEntity.ok(new CommentApiResponse(200, "Comment Added", null));
-    }
-    return ResponseEntity.status(400).body(new CommentApiResponse(400, "Failed to Add Comment", null));
+  public ResponseEntity<?> addComment(@Valid @RequestBody CommentDTO commentDTO, @PathVariable String promptId) {
+
+    String username = AuthUtils.getCurrentUsername();
+    commentService.addComment(commentDTO, promptId, username);
+    return ResponseEntity.ok(new CommentApiResponse(200, "Comment Added", null));
   }
 
+  @PreAuthorize("hasAuthority('BUYER') or hasAuthority('SELLER')")
   @DeleteMapping("/prompts/{promptId}/comments/{commentId}")
   public ResponseEntity<?> deleteComment(@PathVariable String promptId, @PathVariable String commentId) {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    String username = auth.getName();
-    boolean res = commentService.deleteComment(promptId, commentId, username);
-    if (res) {
-      return ResponseEntity.ok(new CommentApiResponse(200, "Comment Deleted", null));
-    }
-    return ResponseEntity.status(403).body(new CommentApiResponse(403, "Unauthorized or Not Found", null));
+
+    String username = AuthUtils.getCurrentUsername();
+    commentService.deleteComment(promptId, commentId, username);
+    return ResponseEntity.ok(new CommentApiResponse(200, "Comment Deleted", null));
   }
 
   @GetMapping("/prompts/{promptId}/comments")
