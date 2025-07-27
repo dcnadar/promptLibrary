@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 import com.assignment.promptlibrary.exception.LikeException;
 import com.assignment.promptlibrary.model.Like;
 import com.assignment.promptlibrary.model.Prompt;
-import com.mongodb.DuplicateKeyException;
-import com.mongodb.MongoWriteException;
 import com.mongodb.client.result.DeleteResult;
 
 @Component

@@ -20,6 +20,10 @@ public class PromptMapper {
       entity.setTags(dto.getTags());
   }
 
+  public static PromptDTO toDTO(Prompt entity) {
+    return toDTO(entity, null);
+  }
+
   public static PromptDTO toDTO(Prompt entity, String fileUrl) {
     PromptDTO dto = new PromptDTO();
     dto.setPromptId(entity.getPromptId());

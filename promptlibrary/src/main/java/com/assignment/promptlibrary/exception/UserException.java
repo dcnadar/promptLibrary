@@ -25,4 +25,11 @@ public class UserException {
       super(message);
     }
   }
+
+  public static class DatabaseException extends RuntimeException {
+    public DatabaseException(String message) {
+      super(message);
+    }
+  }
+
 }

@@ -6,12 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.assignment.promptlibrary.dto.PromptDTO;
-import com.assignment.promptlibrary.exception.PromptException;
+import com.assignment.promptlibrary.response.PromptApiResponse;
 import com.assignment.promptlibrary.service.PromptService;
 import com.assignment.promptlibrary.utils.AuthUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.assignment.promptlibrary.utils.JsonUtils;
+import com.assignment.promptlibrary.utils.ValidationUtils;
 
 import java.util.List;
 
@@ -40,72 +39,58 @@ public class PromptController {
 
   @PreAuthorize("hasAuthority('SELLER')")
   @PostMapping(value = "/prompts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<PromptDTO> createPrompt(
-      @RequestPart("metadata") String metadataJson,
+  public ResponseEntity<PromptApiResponse> createPrompt(
+      @RequestPart("metadata") String metadata,
       @RequestPart("file") MultipartFile file) {
-    ObjectMapper objectMapper = new ObjectMapper();
-    PromptDTO promptDTO = new PromptDTO();
-    try {
-      promptDTO = objectMapper.readValue(metadataJson, PromptDTO.class);
-    } catch (JsonMappingException e) {
-      throw new PromptException.BadRequestException("Json mapping exception");
-    } catch (JsonProcessingException e) {
-      throw new PromptException.BadRequestException("Json Processing exception");
-    }
+    PromptDTO promptDTO = JsonUtils.fromJson(metadata, PromptDTO.class);
+    ValidationUtils.validate(promptDTO);
     String username = AuthUtils.getCurrentUsername();
     PromptDTO createdPrompt = promptService.createPrompt(promptDTO, file, username);
-    return ResponseEntity.status(HttpStatus.CREATED).body(createdPrompt);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(new PromptApiResponse("Prompt Creation Success", createdPrompt));
   }
 
   @GetMapping("/prompts")
-  public ResponseEntity<List<PromptDTO>> getPublicPrompts() {
+  public ResponseEntity<PromptApiResponse> getPublicPrompts() {
     List<PromptDTO> list = promptService.allPublicPrompts();
-    return ResponseEntity.status(HttpStatus.OK).body(list);
+    return ResponseEntity.status(HttpStatus.OK).body(new PromptApiResponse("Prompt List", list));
   }
 
   @GetMapping("/prompts/{promptId}")
-  public ResponseEntity<PromptDTO> getPrompt(@PathVariable String promptId) {
+  public ResponseEntity<PromptApiResponse> getPrompt(@PathVariable String promptId) {
     PromptDTO promptDTO = promptService.getPrompt(promptId);
-    return ResponseEntity.status(HttpStatus.OK).body(promptDTO);
+    return ResponseEntity.status(HttpStatus.OK).body(new PromptApiResponse("Request Success", promptDTO));
   }
 
   @PreAuthorize("hasAuthority('SELLER')")
   @PutMapping(value = "/prompts/{promptId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<?> updatePrompt(
+  public ResponseEntity<PromptApiResponse> updatePrompt(
       @PathVariable String promptId,
       @RequestPart("metadata") String metadata,
       @RequestPart(value = "file", required = false) MultipartFile file) {
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    PromptDTO promptDTO = new PromptDTO();
-    try {
-      promptDTO = objectMapper.readValue(metadata, PromptDTO.class);
-    } catch (JsonMappingException e) {
-      throw new PromptException.BadRequestException("Json mapping exception");
-    } catch (JsonProcessingException e) {
-      throw new PromptException.BadRequestException("Json Processing exception");
-    }
+    PromptDTO promptDTO = JsonUtils.fromJson(metadata, PromptDTO.class);
     String username = AuthUtils.getCurrentUsername();
     PromptDTO updated = promptService.updatePrompt(promptId, promptDTO, file, username);
-    return ResponseEntity.status(HttpStatus.OK).body(updated);
+    return ResponseEntity.status(HttpStatus.OK).body(new PromptApiResponse("Prompt Updated Successfully", updated));
+
   }
 
   @PreAuthorize("hasAuthority('SELLER')")
   @DeleteMapping("/prompts/{promptId}")
-  public ResponseEntity<?> deletePrompt(@PathVariable String promptId) {
+  public ResponseEntity<PromptApiResponse> deletePrompt(@PathVariable String promptId) {
 
     String username = AuthUtils.getCurrentUsername();
     promptService.deletePrompt(promptId, username);
-    return ResponseEntity.ok("Prompt deleted successfully");
+    return ResponseEntity.status(HttpStatus.OK).body(new PromptApiResponse("Prompt Deleted Successfully"));
   }
 
   @PreAuthorize("hasAuthority('SELLER')")
   @GetMapping("/users/me/prompts")
-  public ResponseEntity<List<PromptDTO>> getUserPrompts() {
+  public ResponseEntity<PromptApiResponse> getUserPrompts() {
 
     String username = AuthUtils.getCurrentUsername();
     List<PromptDTO> userPrompts = promptService.getUserPrompts(username);
-    return ResponseEntity.status(HttpStatus.OK).body(userPrompts);
+    return ResponseEntity.status(HttpStatus.OK).body(new PromptApiResponse("All User Prompts Fetched", userPrompts));
   }
 
 }

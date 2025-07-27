@@ -19,7 +19,7 @@ import com.assignment.promptlibrary.model.Prompt;
 import com.assignment.promptlibrary.model.User;
 import com.assignment.promptlibrary.s3.S3Service;
 import com.assignment.promptlibrary.service.serviceInterfaces.IPromptService;
-import com.assignment.promptlibrary.utils.NullAwareBeanUtils;
+import com.assignment.promptlibrary.utils.PromptMapper;
 
 @Service
 public class PromptService implements IPromptService {
@@ -32,6 +32,31 @@ public class PromptService implements IPromptService {
     this.promptDao = promptDao;
     this.userDao = userDao;
     this.s3Service = s3Service;
+  }
+
+  @Override
+  public PromptDTO createPrompt(PromptDTO promptDTO, MultipartFile file, String username) {
+    User userByUsername = userDao.findUserByUsername(username);
+    if (userByUsername == null) {
+      throw new UserException.ResourceNotFoundException("User not found");
+    }
+    String s3Key;
+    try {
+      s3Key = s3Service.uploadFile(file);
+    } catch (IOException e) {
+      throw new PromptException.BadRequestException("File upload failed");
+    }
+    Prompt prompt = new Prompt();
+    BeanUtils.copyProperties(promptDTO, prompt);
+    prompt.setCreatedBy(userByUsername.getId());
+    prompt.setS3Key(s3Key);
+    prompt.setCreatedAt(new Date());
+    prompt.setUpdatedAt(new Date());
+    Prompt savedPrompt = promptDao.savePrompt(prompt);
+    String fileUrl = s3Service.getFileUrl(s3Key);
+    PromptDTO savedDTO = PromptMapper.toDTO(savedPrompt, fileUrl);
+    System.out.println(savedDTO);
+    return savedDTO;
   }
 
   @Override
@@ -71,7 +96,9 @@ public class PromptService implements IPromptService {
       throw new PromptException.UnauthorizedException("You are not the owner of this prompt");
     }
     String newS3Key = existingPrompt.getS3Key();
-    NullAwareBeanUtils.copyNonNullProperties(promptDTO, existingPrompt);
+
+    PromptMapper.updatePromptFromDTO(promptDTO, existingPrompt);
+
     if (file != null && !file.isEmpty()) {
       try {
         s3Service.deleteFile(existingPrompt.getS3Key());
@@ -82,11 +109,9 @@ public class PromptService implements IPromptService {
       }
     }
     existingPrompt.setUpdatedAt(new Date());
-    promptDao.updatePrompt(promptId, existingPrompt, userByUsername.getId());
-    PromptDTO updatedDTO = new PromptDTO();
-
-    BeanUtils.copyProperties(existingPrompt, updatedDTO);
-    updatedDTO.setFileUrl(s3Service.getFileUrl(existingPrompt.getS3Key()));
+    promptDao.updatePrompt(existingPrompt);
+    String fileUrl = s3Service.getFileUrl(existingPrompt.getS3Key());
+    PromptDTO updatedDTO = PromptMapper.toDTO(existingPrompt, fileUrl);
     return updatedDTO;
   }
 
@@ -109,46 +134,14 @@ public class PromptService implements IPromptService {
 
   @Override
   public List<PromptDTO> getUserPrompts(String username) {
-    User userByUsername = userDao.findUserByUsername(username);
-    if (userByUsername == null) {
+    User user = userDao.findUserByUsername(username);
+    if (user == null) {
       throw new UserException.ResourceNotFoundException("User not found");
     }
-    List<Prompt> userPrompts = promptDao.getUserPrompts(userByUsername.getId());
+    List<Prompt> userPrompts = promptDao.getUserPrompts(user.getId());
     return userPrompts.stream().map(prompt -> {
-      PromptDTO dto = new PromptDTO();
-      BeanUtils.copyProperties(prompt, dto);
-      return dto;
+      return PromptMapper.toDTO(prompt);
     }).collect(Collectors.toList());
-  }
-
-  @Override
-  public PromptDTO createPrompt(PromptDTO promptDTO, MultipartFile file, String username) {
-    User userByUsername = userDao.findUserByUsername(username);
-    if (userByUsername == null) {
-      throw new UserException.ResourceNotFoundException("User not found");
-    }
-    String s3Key;
-    try {
-      s3Key = s3Service.uploadFile(file);
-    } catch (IOException e) {
-      throw new PromptException.BadRequestException("File upload failed");
-    }
-
-    Prompt prompt = new Prompt();
-    BeanUtils.copyProperties(promptDTO, prompt);
-    prompt.setCreatedBy(userByUsername.getId());
-    prompt.setS3Key(s3Key);
-    prompt.setCreatedAt(new Date());
-    prompt.setUpdatedAt(new Date());
-
-    Prompt savedPrompt = promptDao.savePrompt(prompt);
-
-    PromptDTO savedDTO = new PromptDTO();
-    BeanUtils.copyProperties(savedPrompt, savedDTO);
-    savedDTO.setCreatedBy(userByUsername.getId());
-    String fileUrl = s3Service.getFileUrl(s3Key);
-    savedDTO.setFileUrl(fileUrl);
-    return savedDTO;
   }
 
 }

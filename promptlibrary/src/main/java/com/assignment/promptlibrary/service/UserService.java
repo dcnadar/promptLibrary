@@ -1,18 +1,21 @@
 package com.assignment.promptlibrary.service;
 
-import java.util.Optional;
-
-import org.springframework.beans.BeanUtils;
-
+import org.springframework.dao.DataAccessException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.assignment.promptlibrary.dao.UserDao;
+import com.assignment.promptlibrary.dto.AuthRequest;
+import com.assignment.promptlibrary.dto.JwtResponse;
 import com.assignment.promptlibrary.dto.UserDTO;
 import com.assignment.promptlibrary.dto.UserUpdateDTO;
 import com.assignment.promptlibrary.exception.UserException;
 import com.assignment.promptlibrary.model.User;
 import com.assignment.promptlibrary.service.serviceInterfaces.IUserService;
+import com.assignment.promptlibrary.utils.RoleValidation;
+import com.assignment.promptlibrary.utils.UserMapper;
 
 @Service
 public class UserService implements IUserService {
@@ -20,79 +23,79 @@ public class UserService implements IUserService {
   private UserDao userDao;
 
   private PasswordEncoder passwordEncoder;
+  private final AuthenticationManager authenticationManager;
+  private JwtService jwtService;
 
-  public UserService(UserDao userDao, PasswordEncoder passwordEncoder) {
+  public UserService(UserDao userDao, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
+      JwtService jwtService) {
     this.userDao = userDao;
     this.passwordEncoder = passwordEncoder;
+    this.authenticationManager = authenticationManager;
+    this.jwtService = jwtService;
+  }
+
+  @Override
+  public void authenticateUser(AuthRequest request) {
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+    } catch (Exception e) {
+      throw new UserException.UnauthorizedException("Invalid username or password");
+    }
+  }
+
+  @Override
+  public JwtResponse createJwtResponse(String username) {
+    String accessToken = jwtService.generateToken(username);
+    // String refreshToken = jwtService.generateToken(username, false);
+    UserDTO userDTO = getUser(username);
+    // return new JwtResponse(accessToken, refreshToken, userDTO);
+    return new JwtResponse(accessToken, userDTO);
   }
 
   @Override
   public UserDTO getUser(String username) {
-    User userByEmail = userDao.findUserByUsername(username);
-    UserDTO userDTO = new UserDTO();
-    if (userByEmail != null) {
-      BeanUtils.copyProperties(userByEmail, userDTO);
-      userDTO.setPassword(null);
-      return userDTO;
+    User user = userDao.findUserByUsername(username);
+    if (user == null) {
+      throw new UserException.ResourceNotFoundException("User not Found");
     }
-    return null;
+    UserDTO userDTO = UserMapper.toDTO(user);
+    return userDTO;
   }
 
   @Override
   public void registerUser(UserDTO userDTO) {
 
-    String role = userDTO.getRole();
-    if (!"BUYER".equalsIgnoreCase(role) && !"SELLER".equalsIgnoreCase(role)) {
-      throw new UserException.BadRequestException("Role must be either 'BUYER' or 'SELLER'");
-    }
-    Optional<User> existingUser = userDao.findUserByEmail(userDTO.getEmail());
-    if (existingUser.isPresent()) {
+    RoleValidation.validateRole(userDTO.getRole());
+
+    userDao.findUserByEmail(userDTO.getEmail()).ifPresent(u -> {
       throw new UserException.ConflictException("Email already exists");
-    }
-    User existingUsernameUser = userDao.findUserByUsername(userDTO.getUsername());
-    if (existingUsernameUser != null) {
+    });
+    if (userDao.findUserByUsername(userDTO.getUsername()) != null) {
       throw new UserException.ConflictException("Username already exists");
     }
-    String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
-    User userEntity = new User();
-    BeanUtils.copyProperties(userDTO, userEntity);
-    userEntity.setPassword(hashedPassword);
-    userDao.registerUser(userEntity);
+    User user = UserMapper.userFromDTO(userDTO);
+    user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
+    try {
+      userDao.registerUser(user);
+    } catch (DataAccessException e) {
+      throw new UserException.DatabaseException("Failed to register user: " + e.getMessage());
+    }
   }
 
   @Override
-  public Optional<UserDTO> updateUser(UserUpdateDTO userUpdateDTO, String id) {
-    Optional<User> existingUserOpt = userDao.findUserById(id);
-    if (existingUserOpt.isEmpty()) {
-      return Optional.empty();
-    }
-    User user = existingUserOpt.get();
-    if (userUpdateDTO.getPassword() != null && !userUpdateDTO.getPassword().isEmpty()) {
-      String hashedPassword = passwordEncoder.encode(userUpdateDTO.getPassword());
-      user.setPassword(hashedPassword);
-    }
-    // Update username if present and not blank
-    if (userUpdateDTO.getUsername() != null && !userUpdateDTO.getUsername().isBlank()) {
-      user.setUsername(userUpdateDTO.getUsername());
-    }
+  public UserDTO updateUser(UserUpdateDTO userUpdateDTO, String id) {
+    User user = userDao.findUserById(id)
+        .orElseThrow(() -> new UserException.ResourceNotFoundException("User not found"));
 
-    // Update email if present and not blank
-    if (userUpdateDTO.getEmail() != null && !userUpdateDTO.getEmail().isBlank()) {
-      user.setEmail(userUpdateDTO.getEmail());
+    UserMapper.updateUserFromDTO(userUpdateDTO, user, passwordEncoder);
+    try {
+      User updatedUser = userDao.updateUser(user);
+      return UserMapper.toDTO(updatedUser);
+    } catch (DataAccessException e) {
+      throw new UserException.DatabaseException("Failed to Update user: " + e.getMessage());
     }
-
-    // Update role if present and not blank
-    if (userUpdateDTO.getRole() != null && !userUpdateDTO.getRole().isBlank()) {
-      user.setRole(userUpdateDTO.getRole());
-    }
-    Optional<User> updatedUserOpt = userDao.updateUser(user, id);
-    if (updatedUserOpt.isPresent()) {
-      UserDTO updatedDTO = new UserDTO();
-      BeanUtils.copyProperties(updatedUserOpt.get(), updatedDTO);
-      updatedDTO.setPassword(null);
-      return Optional.of(updatedDTO);
-    }
-    return Optional.empty();
   }
 
 }

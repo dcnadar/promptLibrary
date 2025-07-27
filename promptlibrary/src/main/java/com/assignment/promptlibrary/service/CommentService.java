@@ -1,5 +1,6 @@
 package com.assignment.promptlibrary.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,10 +44,9 @@ public class CommentService implements ICommentService {
     comment.setPromptId(promptId);
     comment.setUserId(user.getId());
     boolean res = commentDao.addComment(comment);
-    if (res) {
-      return;
+    if (!res) {
+      throw new CommentException.BadRequestException("Can not create comment currently");
     }
-    throw new CommentException.BadRequestException("Can not create comment currently");
   }
 
   @Override
@@ -72,12 +72,14 @@ public class CommentService implements ICommentService {
   @Override
   public List<CommentDTO> getAllComments(String promptId) {
     List<Comment> commentList = commentDao.getAllComments(promptId);
-    List<CommentDTO> dtoList = commentList.stream().map(comment -> {
+    if (commentList == null || commentList.isEmpty()) {
+      return Collections.emptyList();
+    }
+    return commentList.stream().map(comment -> {
       CommentDTO commentDTO = new CommentDTO();
       BeanUtils.copyProperties(comment, commentDTO);
       return commentDTO;
     }).collect(Collectors.toList());
-    return dtoList;
   }
 
 }

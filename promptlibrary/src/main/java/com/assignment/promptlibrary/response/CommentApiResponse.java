@@ -6,7 +6,6 @@ import com.assignment.promptlibrary.dto.CommentDTO;
 
 public class CommentApiResponse {
 
-  private int statusCode;
   private String message;
   private CommentDTO commentDTO;
   private List<CommentDTO> commentDTOlist;
@@ -14,24 +13,19 @@ public class CommentApiResponse {
   public CommentApiResponse() {
   }
 
-  public CommentApiResponse(int statusCode, String message, CommentDTO commentDTO) {
-    this.statusCode = statusCode;
+  public CommentApiResponse(String message) {
+    this.message = message;
+  }
+
+  public CommentApiResponse(String message, CommentDTO commentDTO) {
+
     this.message = message;
     this.commentDTO = commentDTO;
   }
 
-  public CommentApiResponse(int statusCode, List<CommentDTO> commentDTOlist) {
-    this.statusCode = statusCode;
-
+  public CommentApiResponse(String message, List<CommentDTO> commentDTOlist) {
+    this.message = message;
     this.commentDTOlist = commentDTOlist;
-  }
-
-  public int getStatusCode() {
-    return statusCode;
-  }
-
-  public void setStatusCode(int statusCode) {
-    this.statusCode = statusCode;
   }
 
   public String getMessage() {
@@ -60,7 +54,7 @@ public class CommentApiResponse {
 
   @Override
   public String toString() {
-    return "CommentApiResponse [statusCode=" + statusCode + ", message=" + message + ", commentDTO=" + commentDTO
+    return "CommentApiResponse [ message=" + message + ", commentDTO=" + commentDTO
         + ", commentDTOlist=" + commentDTOlist + "]";
   }
 

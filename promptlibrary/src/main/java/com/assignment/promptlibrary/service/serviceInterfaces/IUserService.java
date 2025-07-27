@@ -1,14 +1,19 @@
 package com.assignment.promptlibrary.service.serviceInterfaces;
 
-import java.util.Optional;
-
+import com.assignment.promptlibrary.dto.AuthRequest;
+import com.assignment.promptlibrary.dto.JwtResponse;
 import com.assignment.promptlibrary.dto.UserDTO;
 import com.assignment.promptlibrary.dto.UserUpdateDTO;
 
 public interface IUserService {
+
+  void authenticateUser(AuthRequest authRequest);
+
+  JwtResponse createJwtResponse(String username);
+
   UserDTO getUser(String username);
 
   void registerUser(UserDTO userDTO);
 
-  Optional<UserDTO> updateUser(UserUpdateDTO userUpdateDTO, String id);
+  UserDTO updateUser(UserUpdateDTO userUpdateDTO, String id);
 }

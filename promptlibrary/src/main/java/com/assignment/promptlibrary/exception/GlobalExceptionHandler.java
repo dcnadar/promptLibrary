@@ -1,151 +1,108 @@
 package com.assignment.promptlibrary.exception;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.mongodb.DuplicateKeyException;
+import com.assignment.promptlibrary.response.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
+    ErrorResponse errorResponse = new ErrorResponse(status.value(), message);
+    return ResponseEntity.status(status).body(errorResponse);
+  }
+
+  // user
   @ExceptionHandler(UserException.ResourceNotFoundException.class)
-  public ResponseEntity<Map<String, Object>> handleUserNotFound(UserException.ResourceNotFoundException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 404);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(404).body(error);
+  public ResponseEntity<ErrorResponse> handleUserNotFound(UserException.ResourceNotFoundException ex) {
+    return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
   }
 
   @ExceptionHandler(UserException.ConflictException.class)
-  public ResponseEntity<Map<String, Object>> handleConflict(UserException.ConflictException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 409);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(409).body(error);
+  public ResponseEntity<ErrorResponse> handleConflict(UserException.ConflictException ex) {
+    return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
   }
 
   @ExceptionHandler(UserException.UnauthorizedException.class)
-  public ResponseEntity<Map<String, Object>> handleUnauthorized(UserException.UnauthorizedException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 403);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(403).body(error);
+  public ResponseEntity<ErrorResponse> handleUnauthorized(UserException.UnauthorizedException ex) {
+    return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
   }
 
   @ExceptionHandler(UserException.BadRequestException.class)
-  public ResponseEntity<Map<String, Object>> handleUserBadRequest(UserException.BadRequestException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 400);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(400).body(error);
+  public ResponseEntity<ErrorResponse> handleUserBadRequest(UserException.BadRequestException ex) {
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
   }
 
+  @ExceptionHandler(UserException.DatabaseException.class)
+  public ResponseEntity<ErrorResponse> handleUserDatabaseException(UserException.DatabaseException ex) {
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+  }
   // prompt
 
   @ExceptionHandler(PromptException.ResourceNotFoundException.class)
-  public ResponseEntity<Map<String, Object>> handlePromptNotFound(PromptException.ResourceNotFoundException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 404);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(404).body(error);
+  public ResponseEntity<ErrorResponse> handlePromptNotFound(PromptException.ResourceNotFoundException ex) {
+    return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
   }
 
   @ExceptionHandler(PromptException.UnauthorizedException.class)
-  public ResponseEntity<Map<String, Object>> handlePromptUnauthorized(PromptException.UnauthorizedException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 403);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(403).body(error);
+  public ResponseEntity<ErrorResponse> handlePromptUnauthorized(PromptException.UnauthorizedException ex) {
+    return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
   }
 
   @ExceptionHandler(PromptException.BadRequestException.class)
-  public ResponseEntity<Map<String, Object>> handlePromptBadRequest(PromptException.BadRequestException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 400);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(400).body(error);
+  public ResponseEntity<ErrorResponse> handlePromptBadRequest(PromptException.BadRequestException ex) {
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
   }
 
   // comment
   @ExceptionHandler(CommentException.ResourceNotFoundException.class)
-  public ResponseEntity<Map<String, Object>> handleCommentNotFound(CommentException.ResourceNotFoundException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 404);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(404).body(error);
+  public ResponseEntity<ErrorResponse> handleCommentNotFound(CommentException.ResourceNotFoundException ex) {
+    return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
   }
 
   @ExceptionHandler(CommentException.UnauthorizedException.class)
-  public ResponseEntity<Map<String, Object>> handleCommentUnauthorized(CommentException.UnauthorizedException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 403);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(403).body(error);
+  public ResponseEntity<ErrorResponse> handleCommentUnauthorized(CommentException.UnauthorizedException ex) {
+    return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
   }
 
   @ExceptionHandler(CommentException.BadRequestException.class)
-  public ResponseEntity<Map<String, Object>> handleCommentBadRequest(CommentException.BadRequestException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 400);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(400).body(error);
+  public ResponseEntity<ErrorResponse> handleCommentBadRequest(CommentException.BadRequestException ex) {
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
   }
 
   // like
 
   @ExceptionHandler(LikeException.ResourceNotFoundException.class)
-  public ResponseEntity<Map<String, Object>> handleLikePromptNotFound(LikeException.ResourceNotFoundException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 404);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(404).body(error);
+  public ResponseEntity<ErrorResponse> handleLikePromptNotFound(LikeException.ResourceNotFoundException ex) {
+    return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
   }
 
   @ExceptionHandler(LikeException.ConflictException.class)
-  public ResponseEntity<Map<String, Object>> handleAlreadyLiked(LikeException.ConflictException ex) {
-    ex.printStackTrace();
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 409);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(409).body(error);
+  public ResponseEntity<ErrorResponse> handleAlreadyLiked(LikeException.ConflictException ex) {
+    return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
   }
 
   @ExceptionHandler(LikeException.BadRequestException.class)
-  public ResponseEntity<Map<String, Object>> handleNotLiked(LikeException.BadRequestException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 400);
-    error.put("message", ex.getMessage());
-    return ResponseEntity.status(400).body(error);
+  public ResponseEntity<ErrorResponse> handleNotLiked(LikeException.BadRequestException ex) {
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
   }
+
+  // Global
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<Map<String, Object>> handleGeneralException(Exception ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 500);
-    error.put("message", "Internal Server Error: " + ex.getMessage());
-    return ResponseEntity.status(500).body(error);
+  public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
+    String message = "Internal Server Error: " + ex.getMessage();
+    return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
   }
 
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
-    String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 400);
-    error.put("message", errorMessage);
-    return ResponseEntity.status(400).body(error);
+  @ExceptionHandler(DataAccessException.class)
+  public ResponseEntity<ErrorResponse> handleDatabaseError(DataAccessException ex) {
+    String message = "Database Error: " + ex.getMessage();
+    return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
   }
-
-  @ExceptionHandler(DuplicateKeyException.class)
-  public ResponseEntity<Map<String, Object>> handleDuplicateKey(DuplicateKeyException ex) {
-    Map<String, Object> error = new HashMap<>();
-    error.put("status", 409);
-    error.put("message", "Duplicate key error: Email or Username already exists");
-    return ResponseEntity.status(409).body(error);
-  }
-
 }

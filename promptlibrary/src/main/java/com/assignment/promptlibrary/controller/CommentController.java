@@ -2,6 +2,7 @@ package com.assignment.promptlibrary.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,28 +35,32 @@ public class CommentController {
 
   @PreAuthorize("hasAuthority('BUYER')")
   @PostMapping("/prompts/{promptId}/comments")
-  public ResponseEntity<?> addComment(@Valid @RequestBody CommentDTO commentDTO, @PathVariable String promptId) {
+  public ResponseEntity<CommentApiResponse> addComment(@Valid @RequestBody CommentDTO commentDTO,
+      @PathVariable String promptId) {
 
     String username = AuthUtils.getCurrentUsername();
     commentService.addComment(commentDTO, promptId, username);
-    return ResponseEntity.ok(new CommentApiResponse(200, "Comment Added", null));
+    return ResponseEntity.status(HttpStatus.OK).body(new CommentApiResponse("Comment Added"));
   }
 
   @PreAuthorize("hasAuthority('BUYER') or hasAuthority('SELLER')")
   @DeleteMapping("/prompts/{promptId}/comments/{commentId}")
-  public ResponseEntity<?> deleteComment(@PathVariable String promptId, @PathVariable String commentId) {
+  public ResponseEntity<CommentApiResponse> deleteComment(@PathVariable String promptId,
+      @PathVariable String commentId) {
 
     String username = AuthUtils.getCurrentUsername();
     commentService.deleteComment(promptId, commentId, username);
-    return ResponseEntity.ok(new CommentApiResponse(200, "Comment Deleted", null));
+    return ResponseEntity.status(HttpStatus.OK).body(new CommentApiResponse("Comment Deleted"));
   }
 
   @GetMapping("/prompts/{promptId}/comments")
-  public ResponseEntity<?> getAllComments(@PathVariable String promptId) {
+  public ResponseEntity<CommentApiResponse> getAllComments(@PathVariable String promptId) {
     List<CommentDTO> dtoList = commentService.getAllComments(promptId);
-    if (dtoList != null) {
-      return ResponseEntity.ok(new CommentApiResponse(200, dtoList));
+    if (dtoList == null || dtoList.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(new CommentApiResponse("No comments on prompt", dtoList));
     }
-    return ResponseEntity.ok(new CommentApiResponse(409, null));
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(new CommentApiResponse("List of comments on prompt (" + promptId + "):", dtoList));
   }
 }

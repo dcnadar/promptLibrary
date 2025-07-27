@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.assignment.promptlibrary.model.Prompt;
+
 import com.mongodb.client.result.DeleteResult;
 
 @Component
@@ -26,7 +27,7 @@ public class PromptDao {
     return mongoTemplate.findOne(query, Prompt.class);
   }
 
-  public void updatePrompt(String promptId, Prompt updatedPrompt, String userId) {
+  public void updatePrompt(Prompt updatedPrompt) {
     mongoTemplate.save(updatedPrompt);
   }
 

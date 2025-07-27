@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import com.assignment.promptlibrary.model.User;
@@ -41,22 +40,7 @@ public class UserDao {
     return Optional.ofNullable(entityUser);
   }
 
-  public Optional<User> updateUser(User user, String id) {
-    // Query query = new Query();
-    // query.addCriteria(Criteria.where("id").is(id));
-    // Update update = new Update();
-    // if (user.getUsername() != null) {
-    // update.set("username", user.getUsername());
-    // }
-    // if (user.getPassword() != null) {
-    // update.set("password", user.getPassword());
-    // }
-    // // update.set("email", user.getEmail());
-    // // update.set("role", user.getRole());
-    // User updatedUser = mongoTemplate.findAndModify(query, update, User.class);
-
-    user.setId(id); // Ensure ID is set
-    User savedUser = mongoTemplate.save(user, "users");
-    return Optional.ofNullable(savedUser);
+  public User updateUser(User user) {
+    return mongoTemplate.save(user, "users");
   }
 }
