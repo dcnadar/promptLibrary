@@ -98,12 +98,12 @@ java -jar target/promptlibrary-0.0.1-SNAPSHOT.jar
    - [Create a Prompt (SELLER)](#create-a-prompt-seller)
    - [Update a Prompt (SELLER)](#update-a-prompt-seller)
    - [Delete a Prompt (SELLER)](#delete-a-prompt-seller)
-   - [Get User Prompts (SELLER)](#get-user-prompts-seller)
+   - [Get User Prompts (SELLER)](#get-user-prompts-seller-list)
    - [Get Prompt by ID](#get-prompt-by-id)
    - [Get All Public Prompts](#get-all-public-prompts)
 4. [Comment APIs](#comment-apis)
    - [Add Comment (BUYER)](#add-comment-buyer)
-   - [Delete Comment (BUYER/SELLER)](#delete-comment-buyerseller)
+   - [Delete a Comment (BUYERSELLER)](#delete-a-comment-buyerseller)
    - [Get All Comments on a Prompt](#get-all-comments-on-a-prompt)
 5. [Like APIs](#like-apis)
    - [Like a Prompt (BUYER)](#like-a-prompt-buyer)
@@ -135,7 +135,9 @@ java -jar target/promptlibrary-0.0.1-SNAPSHOT.jar
 - `access_token`: Set this after login.`  
   NOTE- Open Collection Folder inside postman and set Authorization in collection so that no need to enter token in every endpoint.
 
-### Step 3: Authentication
+### Step 3:
+
+### Authentication
 
 #### Signup
 
@@ -214,6 +216,8 @@ Authorization: Bearer your-jwt-token
 
 #### Get Authenticated User
 
+#### User apis
+
 **http Request**
 
 ```
@@ -267,6 +271,8 @@ Authorization: Bearer your-jwt-token
   }
 }
 ```
+
+#### Prompt apis
 
 #### Create a Prompt (SELLER)
 
@@ -504,6 +510,8 @@ GET /api/prompts
 }
 ```
 
+#### Comment apis
+
 #### Add Comment (BUYER)
 
 **http Request**
@@ -539,7 +547,7 @@ Authorization: Bearer your-jwt-token
 }
 ```
 
-### Delete a Comment (BUYER, SELLER)
+#### Delete a Comment (BUYER/SELLER)
 
 **http Request**
 
@@ -604,6 +612,8 @@ GET /api/paompts/{promptId}/comments
   ]
 }
 ```
+
+#### Like apis
 
 #### Like a Prompt (BUYER)
 
