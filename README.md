@@ -28,7 +28,7 @@ A full-stack backend application built with **Spring Boot**, **MongoDB**, and **
 
 ### Prerequisites
 
-- **Java 17 or higher** (Java 21 recommended)
+- **Java 21**
 - **Maven 3.8+**
 - **MongoDB** (local or MongoDB Atlas)
 - **AWS Account** with S3 bucket
