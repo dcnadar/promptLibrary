@@ -1,0 +1,344 @@
+{
+	"info": {
+		"_postman_id": "5c4931c5-e8d0-4554-9cc5-dd164eacd77b",
+		"name": "Prompt App API",
+		"description": "API collection generated from Spring Boot controllers (Auth, User, Prompt, Like)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "33917403"
+	},
+	"item": [
+		{
+			"name": "AuthController",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXllcjEiLCJpYXQiOjE3NTM1MjM2NDgsImV4cCI6MTc1MzUyNDU0OH0.CXugeEchgrxuwOHUPLnoFTC0stlahB6Hj5eLUlmozOM"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\n//   \"username\": \"seller1\",\n//   \"password\": \"password123\"\n// }\n\n{\n  \"username\": \"buyer1\",\n  \"password\": \"password123\"\n}\n"
+						},
+						"url": "{{baseURL}}/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "Signup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\n//   \"username\": \"seller1\",\n//   \"password\": \"password123\",\n//   \"email\":\"seller1@example.com\",\n//   \"role\": \"SELLER\"\n// }\n\n{\n  \"username\": \"buyer1\",\n  \"password\": \"password123\",\n  \"email\": \"buyer1@example.com\",\n  \"role\": \"buyer\"\n}"
+						},
+						"url": "{{baseURL}}/auth/signup"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserController",
+			"item": [
+				{
+					"name": "Get Authenticated User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": "{{baseURL}}/api/users/me"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Authenticated User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"seller1update@example.com\"\n}\n// {\n//   \"username\": \"seller1\"\n// }\n// {\n//   \"password\": \"password123update\"\n// }"
+						},
+						"url": "{{baseURL}}/api/users/me"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PromptController",
+			"item": [
+				{
+					"name": "Create Prompt",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "metadata",
+									"value": "{\"title\":\"Second Prompt \",\"description\":\"CV\",\"price\":223.99,\"category\":\"JOB\",\"contentType\":\"PDF\",\"tags\":[\"job\",\"spring\"]}\n",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1f069e62-6b36-4150-a596-299d5285f1c8"
+								}
+							]
+						},
+						"url": "{{baseURL}}/api/prompts"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Public Prompts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/prompts"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Prompt by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/prompts/6886eeeb0f22b85a4d82c7f"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Prompt",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "metadata",
+									"value": "{\"title\":\"Updated prompt title\"}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1f069e8d-cb7a-4f40-b7de-1491d830445f"
+								}
+							]
+						},
+						"url": "{{baseURL}}/api/prompts/6886ecc10f22b85a4d82c7fb"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Prompt",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": "{{baseURL}}/api/prompts/6886ecc10f22b85a4d82c7fb"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Prompts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": "{{baseURL}}/api/users/me/prompts"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "LikeController",
+			"item": [
+				{
+					"name": "Like Prompt",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": "{{baseURL}}/api/prompts/6886eeeb0f22b85a4d827fc/like"
+					},
+					"response": []
+				},
+				{
+					"name": "Unlike Prompt",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": "{{baseURL}}/api/prompts/6886eeeb0f22b85a4d82c7fc/like"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CommentController",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comment\":  \"This is not a good takeaway\"\n} ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/prompts/6886eeeb0f22b85a4d82c7fc/comments"
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": "{{baseURL}}/api/prompts/6886eeeb0f22b85a4d82c7f/comments/6886f27f3b5910cc908b4b86"
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": "{{baseURL}}/api/prompts/6886eeeb0f22b85a4d8c7fc/comments"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": {
+			"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXllcjEiLCJpYXQiOjE3NTM2NzQyNzQsImV4cCI6MTc1MzY3NTE3NH0.KngpKOo52tv4u0fo_bzN6SOzuYfODOhVExyBO0BxW8U"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "{{base_url}}",
+			"type": "default"
+		}
+	]
+}
