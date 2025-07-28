@@ -23,9 +23,6 @@ public class JwtService {
   @Value("${jwt.access.expiration}")
   private long ACCESS_TOKEN_EXPIRATION;
 
-  @Value("${jwt.refresh.expiration}")
-  private long REFRESH_TOKEN_EXPIRATION;
-
   private SecretKey SECRET_KEY;
 
   @PostConstruct
@@ -35,8 +32,6 @@ public class JwtService {
   }
 
   public String generateToken(String username) {
-    // long expiration = isAccessToken ? ACCESS_TOKEN_EXPIRATION :
-    // REFRESH_TOKEN_EXPIRATION;
     long expiration = ACCESS_TOKEN_EXPIRATION;
     return Jwts.builder()
         .setSubject(username)

@@ -78,7 +78,6 @@ public class PromptController {
   @PreAuthorize("hasAuthority('SELLER')")
   @DeleteMapping("/prompts/{promptId}")
   public ResponseEntity<PromptApiResponse> deletePrompt(@PathVariable String promptId) {
-
     String username = AuthUtils.getCurrentUsername();
     promptService.deletePrompt(promptId, username);
     return ResponseEntity.status(HttpStatus.OK).body(new PromptApiResponse("Prompt Deleted Successfully"));
