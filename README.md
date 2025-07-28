@@ -84,6 +84,31 @@ java -jar target/promptlibrary-0.0.1-SNAPSHOT.jar
 
 ---
 
+# API Documentation
+
+## Table of Contents
+
+1. [Authentication](#authentication)
+   - [Signup](#signup)
+   - [Login](#login)
+2. [User APIs](#user-apis)
+   - [Get Authenticated User](#get-authenticated-user)
+   - [Update User Details (SELLER)](#update-user-details-seller)
+3. [Prompt APIs](#prompt-apis)
+   - [Create a Prompt (SELLER)](#create-a-prompt-seller)
+   - [Update a Prompt (SELLER)](#update-a-prompt-seller)
+   - [Delete a Prompt (SELLER)](#delete-a-prompt-seller)
+   - [Get User Prompts (SELLER)](#get-user-prompts-seller)
+   - [Get Prompt by ID](#get-prompt-by-id)
+   - [Get All Public Prompts](#get-all-public-prompts)
+4. [Comment APIs](#comment-apis)
+   - [Add Comment (BUYER)](#add-comment-buyer)
+   - [Delete Comment (BUYER/SELLER)](#delete-comment-buyerseller)
+   - [Get All Comments on a Prompt](#get-all-comments-on-a-prompt)
+5. [Like APIs](#like-apis)
+   - [Like a Prompt (BUYER)](#like-a-prompt-buyer)
+   - [Unlike a Prompt (BUYER)](#unlike-a-prompt-buyer)
+
 ## API Endpoints Overview
 
 | Controller            | Endpoint(s)                                                                        | Method(s)         | Auth Required |
@@ -109,31 +134,6 @@ java -jar target/promptlibrary-0.0.1-SNAPSHOT.jar
 - `base_url`: `http://localhost:8080`
 - `access_token`: Set this after login.`  
   NOTE- Open Collection Folder inside postman and set Authorization in collection so that no need to enter token in every endpoint.
-
-# API Documentation
-
-## Table of Contents
-
-1. [Authentication](#authentication)
-   - [Signup](#signup)
-   - [Login](#login)
-2. [User APIs](#user-apis)
-   - [Get Authenticated User](#get-authenticated-user)
-   - [Update User Details (SELLER)](#update-user-details-seller)
-3. [Prompt APIs](#prompt-apis)
-   - [Create a Prompt (SELLER)](#create-a-prompt-seller)
-   - [Update a Prompt (SELLER)](#update-a-prompt-seller)
-   - [Delete a Prompt (SELLER)](#delete-a-prompt-seller)
-   - [Get User Prompts (SELLER)](#get-user-prompts-seller)
-   - [Get Prompt by ID](#get-prompt-by-id)
-   - [Get All Public Prompts](#get-all-public-prompts)
-4. [Comment APIs](#comment-apis)
-   - [Add Comment (BUYER)](#add-comment-buyer)
-   - [Delete Comment (BUYER/SELLER)](#delete-comment-buyerseller)
-   - [Get All Comments on a Prompt](#get-all-comments-on-a-prompt)
-5. [Like APIs](#like-apis)
-   - [Like a Prompt (BUYER)](#like-a-prompt-buyer)
-   - [Unlike a Prompt (BUYER)](#unlike-a-prompt-buyer)
 
 ### Step 3: Authentication
 
