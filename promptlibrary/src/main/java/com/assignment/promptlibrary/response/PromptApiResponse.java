@@ -3,7 +3,9 @@ package com.assignment.promptlibrary.response;
 import java.util.List;
 
 import com.assignment.promptlibrary.dto.PromptDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PromptApiResponse {
   private String statusMsg;
   private PromptDTO dto;

@@ -58,7 +58,7 @@ public class CommentController {
     List<CommentDTO> dtoList = commentService.getAllComments(promptId);
     if (dtoList == null || dtoList.isEmpty()) {
       return ResponseEntity.status(HttpStatus.OK)
-          .body(new CommentApiResponse("No comments on prompt", dtoList));
+          .body(new CommentApiResponse("No comments/prompt found"));
     }
     return ResponseEntity.status(HttpStatus.OK)
         .body(new CommentApiResponse("List of comments on prompt (" + promptId + "):", dtoList));

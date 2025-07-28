@@ -1,7 +1,9 @@
 package com.assignment.promptlibrary.response;
 
 import com.assignment.promptlibrary.dto.UserDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserApiResponse {
 
   private String statusMsg;
@@ -16,7 +18,6 @@ public class UserApiResponse {
   }
 
   public UserApiResponse(String statusMsg, UserDTO userDTO) {
-
     this.statusMsg = statusMsg;
     this.userDTO = userDTO;
   }

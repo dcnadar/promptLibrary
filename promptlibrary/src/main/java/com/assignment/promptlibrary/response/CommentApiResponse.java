@@ -3,7 +3,9 @@ package com.assignment.promptlibrary.response;
 import java.util.List;
 
 import com.assignment.promptlibrary.dto.CommentDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentApiResponse {
 
   private String message;

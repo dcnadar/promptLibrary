@@ -47,9 +47,7 @@ public class UserService implements IUserService {
   @Override
   public JwtResponse createJwtResponse(String username) {
     String accessToken = jwtService.generateToken(username);
-    // String refreshToken = jwtService.generateToken(username, false);
     UserDTO userDTO = getUser(username);
-    // return new JwtResponse(accessToken, refreshToken, userDTO);
     return new JwtResponse(accessToken, userDTO);
   }
 

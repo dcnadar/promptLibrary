@@ -114,34 +114,51 @@ java -jar target/promptlibrary-0.0.1-SNAPSHOT.jar
 
 #### Signup
 
-```http
+```http Request
 POST /auth/signup
-Content-Type: application/json
 
 {
-  "username": "johndoe",
+  "username": "seller1",
   "password": "password123",
-  "role": "BUYER" // or "SELLER"
+  "email":"seller1@example.com",
+  "role": "SELLER"
+},
+{
+  "username": "buyer1",
+  "password": "password123",
+  "email": "buyer1@example.com",
+  "role": "buyer"
+}
+```
+
+```http Response
+{
+    "statusMsg": "Registration Successfull"
 }
 ```
 
 #### Login
 
-```http
+```http Request
 POST /auth/login
-Content-Type: application/json
 
 {
-  "username": "johndoe",
+  "username": "seller1",
   "password": "password123"
 }
 ```
 
-Response:
+```http Response
 
-```json
 {
-  "token": "your-jwt-token"
+    "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZWxsZXIxIiwiaWF0IjoxNzUzNjcyMjUyLCJleHAiOjE3NTM2NzMxNTJ9.FNyj5GeBTa7LsfuGfNhciZ223Zmh_HDWyyD_9OItYLc",
+    "user": {
+        "id": "6886e9c2814dd802842f80b2",
+        "username": "seller1",
+        "email": "seller1@example.com",
+        "password": null,
+        "role": "SELLER"
+    }
 }
 ```
 
@@ -157,9 +174,46 @@ Authorization: Bearer your-jwt-token
 
 #### Get Authenticated User
 
-```http
+```http Request
 GET /api/users/me
 Authorization: Bearer your-jwt-token
+```
+
+```http Response
+{
+    "statusMsg": "Authenticated User Details",
+    "userDTO": {
+        "id": "6886e9c2814dd802842f80b2",
+        "username": "seller1",
+        "email": "seller1@example.com",
+        "password": null,
+        "role": "SELLER"
+    }
+}
+```
+
+#### Update User details (SELLER)
+
+```http Request
+PUT  /api/users/me
+Authorization: Bearer your-jwt-token
+
+{
+  "email": "seller1update@example.com"
+}
+```
+
+```http Response
+{
+    "statusMsg": "Updated User Details",
+    "userDTO": {
+        "id": "6886e9c2814dd802842f80b2",
+        "username": "seller1",
+        "email": "seller1update@example.com",
+        "password": null,
+        "role": "SELLER"
+    }
+}
 ```
 
 #### Create a Prompt (SELLER)
@@ -170,27 +224,331 @@ Authorization: Bearer your-jwt-token
 Content-Type: multipart/form-data
 
 Fields:
-- metadata: { "title": "Sample", "description": "Demo", "isPublic": true }
+- metadata: {"title":"new four ","description":"Resume","price":0.99,"category":"Interview","contentType":"PDF","tags":["learn","ai"]}
+
 - file: [Upload prompt file]
+```
+
+```http Response
+{
+    "statusMsg": "Prompt Creation Success",
+    "dto": {
+        "promptId": "6886ecc10f22b85a4d82c7fb",
+        "title": "new four ",
+        "description": "Resume",
+        "price": 0.99,
+        "category": "Interview",
+        "contentType": "PDF",
+        "tags": [
+            "learn",
+            "ai"
+        ],
+        "createdBy": "6886e9c2814dd802842f80b2",
+        "s3Key": "prompts/b45635f5-1062-412f-868e-d17b28cdcccd-DeepakResume0.pdf",
+        "likesCount": 0,
+        "createdAt": "2025-07-28T03:21:37.816+00:00",
+        "updatedAt": "2025-07-28T03:21:37.816+00:00",
+        "fileUrl": "https://promp-lib-bucket.s3.amazonaws.com/prompts/b45635f5-1062-412f-868e-d17b28cdcccd-DeepakResume0.pdf"
+    }
+}
+```
+
+#### Update a Prompt (SELLER)
+
+```http Request
+PUT api/prompts/{promptId}
+Authorization: Bearer your-jwt-token
+
+Fields:
+- metadata: {"title":"Updated prompt title"}
+-file : [Update prompt file ] optional
+```
+
+```http Response
+{
+    "statusMsg": "Prompt Updated Successfully",
+    "dto": {
+        "promptId": "6886ecc10f22b85a4d82c7fb",
+        "title": "Updated prompt title",
+        "description": "Resume",
+        "price": 0.99,
+        "category": "Interview",
+        "contentType": "PDF",
+        "tags": [
+            "learn",
+            "ai"
+        ],
+        "createdBy": "6886e9c2814dd802842f80b2",
+        "s3Key": "prompts/9c747fd1-08d5-4562-bb5b-6637e2f6504d-1745323236.pdf",
+        "likesCount": 0,
+        "createdAt": "2025-07-28T03:21:37.816+00:00",
+        "updatedAt": "2025-07-28T03:27:43.410+00:00",
+        "fileUrl": "https://promp-lib-bucket.s3.amazonaws.com/prompts/9c747fd1-08d5-4562-bb5b-6637e2f6504d-1745323236.pdf"
+    }
+}
+```
+
+#### Delete a Prompt (SELLER)
+
+```http Request
+DELETE api/prompts/{promptId}
+Authorization: Bearer your-jwt-token
+```
+
+```http Response
+{
+    "statusMsg": "Prompt Deleted Successfully"
+}
+```
+
+#### Get User Prompts (SELLER) LIST
+
+```http Request
+GET /api/users/me/prompts
+Authorization: Bearer your-jwt-token
+```
+
+```http Response - LIST OF ALL PROMPTS CREATED BY USER-
+{
+    "statusMsg": "All User Prompts Fetched",
+    "dtoList": [
+        {
+            "promptId": "6886eeeb0f22b85a4d82c7fc",
+            "title": "new four ",
+            "description": "Resume",
+            "price": 0.99,
+            "category": "Interview",
+            "contentType": "PDF",
+            "tags": [
+                "learn",
+                "ai"
+            ],
+            "createdBy": "6886e9c2814dd802842f80b2",
+            "s3Key": "prompts/09c44a58-17f8-4302-a16d-ce62e3777e30-DeepakResume0.pdf",
+            "likesCount": 0,
+            "createdAt": "2025-07-28T03:30:51.509+00:00",
+            "updatedAt": "2025-07-28T03:30:51.509+00:00",
+            "fileUrl": null
+        },
+        {
+            "promptId": "6886efb70f22b85a4d82c7fd",
+            "title": "Second Prompt ",
+            "description": "CV",
+            "price": 223.99,
+            "category": "JOB",
+            "contentType": "PDF",
+            "tags": [
+                "job",
+                "spring"
+            ],
+            "createdBy": "6886e9c2814dd802842f80b2",
+            "s3Key": "prompts/08bed09b-ca05-4e66-83da-00b473dac40b-DeepakResume0.pdf",
+            "likesCount": 0,
+            "createdAt": "2025-07-28T03:34:15.848+00:00",
+            "updatedAt": "2025-07-28T03:34:15.848+00:00",
+            "fileUrl": null
+        }
+    ]
+}
+```
+
+#### Get Prompt by Id
+
+```http Request
+GET api/prompts/{promptId}
+```
+
+```http Response
+{
+    "statusMsg": "Request Success",
+    "dto": {
+        "promptId": "6886eeeb0f22b85a4d82c7fc",
+        "title": "new four ",
+        "description": "Resume",
+        "price": 0.99,
+        "category": "Interview",
+        "contentType": "PDF",
+        "tags": [
+            "learn",
+            "ai"
+        ],
+        "createdBy": "6886e9c2814dd802842f80b2",
+        "s3Key": "prompts/09c44a58-17f8-4302-a16d-ce62e3777e30-DeepakResume0.pdf",
+        "likesCount": 0,
+        "createdAt": "2025-07-28T03:30:51.509+00:00",
+        "updatedAt": "2025-07-28T03:30:51.509+00:00",
+        "fileUrl": "https://promp-lib-bucket.s3.amazonaws.com/prompts/09c44a58-17f8-4302-a16d-ce62e3777e30-DeepakResume0.pdf"
+    }
+}
+```
+
+```Error Response
+{
+    "status": 404,
+    "message": "Prompt not found",
+    "timestamp": "2025-07-28T09:08:21.840572"
+}
+```
+
+#### Get all public Prompts
+
+```http Request
+GET /api/prompts
+```
+
+```http Response
+{
+    "statusMsg": "Prompt List",
+    "dtoList": [
+        {
+            "promptId": "6886eeeb0f22b85a4d82c7fc",
+            "title": "new four ",
+            "description": "Resume",
+            "price": 0.99,
+            "category": "Interview",
+            "contentType": "PDF",
+            "tags": [
+                "learn",
+                "ai"
+            ],
+            "createdBy": "6886e9c2814dd802842f80b2",
+            "s3Key": "prompts/09c44a58-17f8-4302-a16d-ce62e3777e30-DeepakResume0.pdf",
+            "likesCount": 0,
+            "createdAt": "2025-07-28T03:30:51.509+00:00",
+            "updatedAt": "2025-07-28T03:30:51.509+00:00",
+            "fileUrl": null
+        },
+        {
+            "promptId": "6886efb70f22b85a4d82c7fd",
+            "title": "Second Prompt ",
+            "description": "CV",
+            "price": 223.99,
+            "category": "JOB",
+            "contentType": "PDF",
+            "tags": [
+                "job",
+                "spring"
+            ],
+            "createdBy": "6886e9c2814dd802842f80b2",
+            "s3Key": "prompts/08bed09b-ca05-4e66-83da-00b473dac40b-DeepakResume0.pdf",
+            "likesCount": 0,
+            "createdAt": "2025-07-28T03:34:15.848+00:00",
+            "updatedAt": "2025-07-28T03:34:15.848+00:00",
+            "fileUrl": null
+        }
+    ]
+}
 ```
 
 #### Add Comment (BUYER)
 
-```http
+```http Request
 POST /api/prompts/{promptId}/comments
 Authorization: Bearer your-jwt-token
-Content-Type: application/json
 
 {
   "text": "This is a great prompt!"
 }
 ```
 
+```http Response
+{
+    "message": "Comment Added"
+}
+```
+
+```error Response
+{
+    "status": 404,
+    "message": "Prompt not found",
+    "timestamp": "2025-07-28T09:16:24.082048"
+}
+```
+
+### Delete a Comment (BUYER, SELLER)
+
+```http Request
+DELETE /api/prompts/{promptId}/comments/{commentId}
+Authorization: Bearer your-jwt-token
+```
+
+```http Response
+{
+    "message": "Comment Deleted"
+}
+```
+
+```Error Respones
+{
+    "status": 404,
+    "message": "Comment not found",
+    "timestamp": "2025-07-28T09:18:34.346241"
+}
+```
+
+### GET all comments on a Prompt
+
+```http Request
+GET /api/paompts/{promptId}/comments
+```
+
+```http Response
+{
+    "message": "List of comments on prompt (6886eeeb0f22b85a4d82c7fc):",
+    "commentDTOlist": [
+        {
+            "id": "6886f26a40fc886544eb994c",
+            "promptId": "6886eeeb0f22b85a4d82c7fc",
+            "userId": "6886e9f2814dd802842f80b3",
+            "comment": "This is a great prompt!",
+            "createdAt": "2025-07-28T03:45:46.242+00:00"
+        },
+        {
+            "id": "6886f39e3b5910cc908b4b87",
+            "promptId": "6886eeeb0f22b85a4d82c7fc",
+            "userId": "6886e9f2814dd802842f80b3",
+            "comment": "This is not a great prompt!",
+            "createdAt": "2025-07-28T03:50:54.574+00:00"
+        },
+        {
+            "id": "6886f3ab3b5910cc908b4b88",
+            "promptId": "6886eeeb0f22b85a4d82c7fc",
+            "userId": "6886e9f2814dd802842f80b3",
+            "comment": "This is not a good takeaway",
+            "createdAt": "2025-07-28T03:51:07.034+00:00"
+        }
+    ]
+}
+```
+
 #### Like a Prompt (BUYER)
 
-```http
+```http Request
 POST /api/prompts/{promptId}/like
 Authorization: Bearer your-jwt-token
 ```
 
----
+````http Response
+{
+    "message": "Liked"
+}
+```error Response
+{
+    "status": 404,
+    "message": "Prompt not found",
+    "timestamp": "2025-07-28T09:26:17.714242"
+}
+````
+
+#### Unlike a Prompt (BUYER)
+
+```http Request
+DELETE /api/prompts/{promptId}/like
+Authorization: Bearer your-jwt-token
+```
+
+```http Response
+{
+    "message": "Unliked"
+}
+```

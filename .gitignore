@@ -1,6 +1,6 @@
 promptlibrary/.gitignore
 promptlibrary/.gitattributes
-.gitignore
+/.gitignore
 promptlibrary/.vscode/
 promptlibrary/.DS_Store
-.vscode
+/.vscode
