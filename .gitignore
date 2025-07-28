@@ -1,1 +1,5 @@
 promptlibrary/.gitignore
+promptlibrary/.gitattributes
+.gitignore
+promptlibrary/.vscode/
+.vscode/
