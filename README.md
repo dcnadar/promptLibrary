@@ -114,8 +114,9 @@ java -jar target/promptlibrary-0.0.1-SNAPSHOT.jar
 
 #### Signup
 
-```
 http Request
+
+```
 POST /auth/signup
 
 {
@@ -132,8 +133,9 @@ POST /auth/signup
 }
 ```
 
-```
 http Response
+
+```
 {
     "statusMsg": "Registration Successfull"
 }
@@ -141,8 +143,9 @@ http Response
 
 #### Login
 
-```
 http Request
+
+```
 POST /auth/login
 
 {
@@ -151,9 +154,9 @@ POST /auth/login
 }
 ```
 
-```
 http Response
 
+```
 {
     "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZWxsZXIxIiwiaWF0IjoxNzUzNjcyMjUyLCJleHAiOjE3NTM2NzMxNTJ9.FNyj5GeBTa7LsfuGfNhciZ223Zmh_HDWyyD_9OItYLc",
     "user": {
@@ -178,14 +181,16 @@ Authorization: Bearer your-jwt-token
 
 #### Get Authenticated User
 
-```
 http Request
+
+```
 GET /api/users/me
 Authorization: Bearer your-jwt-token
 ```
 
-```
 http Response
+
+```
 {
     "statusMsg": "Authenticated User Details",
     "userDTO": {
@@ -200,8 +205,9 @@ http Response
 
 #### Update User details (SELLER)
 
-```
 http Request
+
+```
 PUT  /api/users/me
 Authorization: Bearer your-jwt-token
 
@@ -210,8 +216,9 @@ Authorization: Bearer your-jwt-token
 }
 ```
 
-```
 http Response
+
+```
 {
     "statusMsg": "Updated User Details",
     "userDTO": {
@@ -226,8 +233,9 @@ http Response
 
 #### Create a Prompt (SELLER)
 
-```
 http Request
+
+```
 POST /api/prompts
 Authorization: Bearer your-jwt-token
 Content-Type: multipart/form-data
@@ -238,8 +246,9 @@ Fields:
 - file: [Upload prompt file]
 ```
 
-```
 http Response
+
+```
 {
     "statusMsg": "Prompt Creation Success",
     "dto": {
@@ -265,8 +274,9 @@ http Response
 
 #### Update a Prompt (SELLER)
 
-```
 http Request
+
+```
 PUT api/prompts/{promptId}
 Authorization: Bearer your-jwt-token
 
@@ -275,8 +285,9 @@ Fields:
 -file : [Update prompt file ] optional
 ```
 
-```
 http Response
+
+```
 {
     "statusMsg": "Prompt Updated Successfully",
     "dto": {
@@ -302,14 +313,16 @@ http Response
 
 #### Delete a Prompt (SELLER)
 
-```
 http Request
+
+```
 DELETE api/prompts/{promptId}
 Authorization: Bearer your-jwt-token
 ```
 
-```
 http Response
+
+```
 {
     "statusMsg": "Prompt Deleted Successfully"
 }
@@ -317,14 +330,16 @@ http Response
 
 #### Get User Prompts (SELLER) LIST
 
-```
 http Request
+
+```
 GET /api/users/me/prompts
 Authorization: Bearer your-jwt-token
 ```
 
-```
 http Response - LIST OF ALL PROMPTS CREATED BY USER-
+
+```
 {
     "statusMsg": "All User Prompts Fetched",
     "dtoList": [
@@ -370,13 +385,15 @@ http Response - LIST OF ALL PROMPTS CREATED BY USER-
 
 #### Get Prompt by Id
 
-```
 http Request
+
+```
 GET api/prompts/{promptId}
 ```
 
-```
 http Response
+
+```
 {
     "statusMsg": "Request Success",
     "dto": {
@@ -400,8 +417,9 @@ http Response
 }
 ```
 
-```
 Error Response
+
+```
 {
     "status": 404,
     "message": "Prompt not found",
@@ -411,13 +429,15 @@ Error Response
 
 #### Get all public Prompts
 
-```
 http Request
+
+```
 GET /api/prompts
 ```
 
-```
 http Response
+
+```
 {
     "statusMsg": "Prompt List",
     "dtoList": [
@@ -463,8 +483,9 @@ http Response
 
 #### Add Comment (BUYER)
 
-```
 http Request
+
+```
 POST /api/prompts/{promptId}/comments
 Authorization: Bearer your-jwt-token
 
@@ -473,14 +494,17 @@ Authorization: Bearer your-jwt-token
 }
 ```
 
-```
 http Response
+
+```
 {
     "message": "Comment Added"
 }
 ```
 
-```error Response
+error Response
+
+```
 {
     "status": 404,
     "message": "Prompt not found",
@@ -490,20 +514,24 @@ http Response
 
 ### Delete a Comment (BUYER, SELLER)
 
-```
 http Request
+
+```
 DELETE /api/prompts/{promptId}/comments/{commentId}
 Authorization: Bearer your-jwt-token
 ```
 
-```
 http Response
+
+```
 {
     "message": "Comment Deleted"
 }
 ```
 
-```Error Respones
+Error Respones
+
+```
 {
     "status": 404,
     "message": "Comment not found",
@@ -513,13 +541,15 @@ http Response
 
 ### GET all comments on a Prompt
 
-```
 http Request
+
+```
 GET /api/paompts/{promptId}/comments
 ```
 
-```
 http Response
+
+```
 {
     "message": "List of comments on prompt (6886eeeb0f22b85a4d82c7fc):",
     "commentDTOlist": [
@@ -550,21 +580,24 @@ http Response
 
 #### Like a Prompt (BUYER)
 
-```
 http Request
+
+```
 POST /api/prompts/{promptId}/like
 Authorization: Bearer your-jwt-token
 ```
 
-```
 http Response
+
+```
 {
     "message": "Liked"
 }
 ```
 
-```
 error Response
+
+```
 {
     "status": 404,
     "message": "Prompt not found",
@@ -574,14 +607,16 @@ error Response
 
 #### Unlike a Prompt (BUYER)
 
-```
 http Request
+
+```
 DELETE /api/prompts/{promptId}/like
 Authorization: Bearer your-jwt-token
 ```
 
-```
 http Response
+
+```
 {
     "message": "Unliked"
 }
